@@ -10,9 +10,9 @@ from tqdm import tqdm
 import wavio
 
 
-def envelope(y, rate, threshold):
+def envelope(y, rate, threshold): #clean data to remove parts that are not relevant
     mask = []
-    y = pd.Series(y).apply(np.abs)
+    y = pd.Series(y).apply(np.abs) #obtain the absolute value to only get positive
     y_mean = y.rolling(window=int(rate/20),
                        min_periods=1,
                        center=True).max()
@@ -21,7 +21,7 @@ def envelope(y, rate, threshold):
             mask.append(True)
         else:
             mask.append(False)
-    return mask, y_mean
+    return mask, y_mean #return the mask list of bool vals and the pandas Series of values
 
 
 def downsample_mono(path, sr):
@@ -39,7 +39,7 @@ def downsample_mono(path, sr):
         pass
     except Exception as exc:
         raise exc
-    wav = resample(wav, rate, sr)
+    wav = resample(y=wav, orig_sr=rate, target_sr=sr)
     wav = wav.astype(np.int16)
     return sr, wav
 
@@ -99,7 +99,10 @@ def test_threshold(args):
     src_root = args.src_root
     wav_paths = glob('{}/**'.format(src_root), recursive=True)
     wav_path = [x for x in wav_paths if args.fn in x]
+    print(wav_path)
     if len(wav_path) != 1:
+        print(wav_paths)
+        print(wav_path)
         print('audio file not found for sub-string: {}'.format(args.fn))
         return
     rate, wav = downsample_mono(wav_path[0], args.sr)
@@ -126,11 +129,14 @@ if __name__ == '__main__':
     parser.add_argument('--sr', type=int, default=16000,
                         help='rate to downsample audio')
 
-    parser.add_argument('--fn', type=str, default='3a3d0279',
-                        help='file to plot over time to check magnitude')
+    parser.add_argument('--fn', type=str, default='3a3d0279', 
+                        help='file to plot over time to check magnitude') #wav file name
     parser.add_argument('--threshold', type=str, default=20,
                         help='threshold magnitude for np.int16 dtype')
     args, _ = parser.parse_known_args()
 
-    #test_threshold(args)
-    split_wavs(args)
+    test_threshold(args)
+    #split_wavs(args)
+
+
+#python clean.py --src_root D:/SirenNeuralNetwork/Audio-Classification/raw --dst_root D:/SirenNeuralNetwork/Audio-Classification/clean --fn 10567

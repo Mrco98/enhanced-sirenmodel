@@ -37,7 +37,7 @@ def Conv1D(N_CLASSES=10, SR=16000, DT=1.0):
     model = Model(inputs=i.input, outputs=o, name='1d_convolution')
     model.compile(optimizer='adam',
                   loss='categorical_crossentropy',
-                  metrics=['accuracy'])
+                  metrics=['accuracy', tf.keras.metrics.Recall(), tf.keras.metrics.Precision()])
     return model
 
 
@@ -70,7 +70,7 @@ def Conv2D(N_CLASSES=10, SR=16000, DT=1.0):
     model = Model(inputs=i.input, outputs=o, name='2d_convolution')
     model.compile(optimizer='adam',
                   loss='categorical_crossentropy',
-                  metrics=['accuracy'])
+                  metrics=['accuracy', tf.keras.metrics.Recall(), tf.keras.metrics.Precision()])
     return model
 
 
@@ -106,7 +106,7 @@ def LSTM(N_CLASSES=10, SR=16000, DT=1.0):
     model = Model(inputs=i.input, outputs=o, name='long_short_term_memory')
     model.compile(optimizer='adam',
                   loss='categorical_crossentropy',
-                  metrics=['accuracy'])
+                  metrics=['accuracy', tf.keras.metrics.Recall(), tf.keras.metrics.Precision()])
 
     return model
 

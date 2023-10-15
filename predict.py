@@ -49,16 +49,15 @@ def make_prediction(args):
         results.append(y_mean)
 
     np.save(os.path.join('logs', args.pred_fn), np.array(results))
-
-
+ 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Audio Classification Training')
     parser.add_argument('--model_fn', type=str, default='models/lstm.h5',
                         help='model file to make predictions')
-    parser.add_argument('--pred_fn', type=str, default='y_pred',
+    parser.add_argument('--pred_fn', type=str, default='siren-pred',
                         help='fn to write predictions in logs dir')
-    parser.add_argument('--src_dir', type=str, default='wavfiles',
+    parser.add_argument('--src_dir', type=str, default='D:/SirenNeuralNetwork/enhanced-sirenmodel/raw',
                         help='directory containing wavfiles to predict')
     parser.add_argument('--dt', type=float, default=1.0,
                         help='time in seconds to sample audio')

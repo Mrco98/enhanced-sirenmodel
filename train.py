@@ -13,7 +13,8 @@ from tqdm import tqdm
 from glob import glob
 import argparse
 import warnings
-
+import matplotlib.pyplot as plt
+ 
 
 class DataGenerator(tf.keras.utils.Sequence):
     def __init__(self, wav_paths, labels, sr, dt, n_classes,
@@ -29,9 +30,9 @@ class DataGenerator(tf.keras.utils.Sequence):
 
 
     def __len__(self):
-        return int(np.floor(len(self.wav_paths) / self.batch_size))
+        return int(np.floor(len(self.wav_paths) / self.batch_size)) #total number of files divided by batch size
 
-
+    #iter will call __getitem__
     def __getitem__(self, index):
         indexes = self.indexes[index*self.batch_size:(index+1)*self.batch_size]
 
@@ -72,7 +73,7 @@ def train(args):
     csv_path = os.path.join('logs', '{}_history.csv'.format(model_type))
 
     wav_paths = glob('{}/**'.format(src_root), recursive=True)
-    wav_paths = [x.replace(os.sep, '/') for x in wav_paths if '.wav' in x]
+    wav_paths = [x.replace(os.sep, '/') for x in wav_paths if '.wav' in x] #replace the separator symbol to /
     classes = sorted(os.listdir(args.src_root))
     le = LabelEncoder()
     le.fit(classes)
@@ -93,21 +94,52 @@ def train(args):
                        params['N_CLASSES'], batch_size=batch_size)
     vg = DataGenerator(wav_val, label_val, sr, dt,
                        params['N_CLASSES'], batch_size=batch_size)
+    
+    
+    #model = models[model_type]
+    #model.summary()
+
+    #'''
     model = models[model_type]
+    model.summary()
     cp = ModelCheckpoint('models/{}.h5'.format(model_type), monitor='val_loss',
                          save_best_only=True, save_weights_only=False,
                          mode='auto', save_freq='epoch', verbose=1)
     csv_logger = CSVLogger(csv_path, append=False)
-    model.fit(tg, validation_data=vg,
-              epochs=30, verbose=1,
+    hist = model.fit(tg, validation_data=vg,
+              epochs=100, verbose=1,
               callbacks=[csv_logger, cp])
+    #'''
+    plt.title('Accuracy')
+    plt.plot(hist.history['accuracy'], 'r', label='accuracy')
+    plt.plot(hist.history['val_accuracy'], 'b', label='validation accuracy')
+    plt.legend()
+    plt.show()
+
+    plt.title('Loss')
+    plt.plot(hist.history['loss'], 'r', label='accuracy')
+    plt.plot(hist.history['val_loss'], 'b', label='validation accuracy')
+    plt.legend()
+    plt.show()
+
+    plt.title('Precision')
+    plt.plot(hist.history['accuracy'], 'r', label='accuracy')
+    plt.plot(hist.history['val_accuracy'], 'b', label='validation accuracy')
+    plt.legend()
+    plt.show()
+
+    plt.title('Recall')
+    plt.plot(hist.history['accuracy'], 'r', label='accuracy')
+    plt.plot(hist.history['val_accuracy'], 'b', label='validation accuracy')
+    plt.legend()
+    plt.show()
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Audio Classification Training')
     parser.add_argument('--model_type', type=str, default='lstm',
                         help='model to run. i.e. conv1d, conv2d, lstm')
-    parser.add_argument('--src_root', type=str, default='clean',
+    parser.add_argument('--src_root', type=str, default='D:/SirenNeuralNetwork/Audio-Classification/clean',
                         help='directory of audio files in total duration')
     parser.add_argument('--batch_size', type=int, default=16,
                         help='batch size')
@@ -119,3 +151,4 @@ if __name__ == '__main__':
 
     train(args)
 
+# python train.py
