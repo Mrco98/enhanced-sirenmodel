@@ -10,9 +10,9 @@ from tqdm import tqdm
 import wavio
 
 
-def envelope(y, rate, threshold): #clean data to remove parts that are not relevant
+def envelope(y, rate, threshold):
     mask = []
-    y = pd.Series(y).apply(np.abs) #obtain the absolute value to only get positive
+    y = pd.Series(y).apply(np.abs) 
     y_mean = y.rolling(window=int(rate/20),
                        min_periods=1,
                        center=True).max()
@@ -21,7 +21,7 @@ def envelope(y, rate, threshold): #clean data to remove parts that are not relev
             mask.append(True)
         else:
             mask.append(False)
-    return mask, y_mean #return the mask list of bool vals and the pandas Series of values
+    return mask, y_mean 
 
 
 def downsample_mono(path, sr):
@@ -135,8 +135,8 @@ if __name__ == '__main__':
                         help='threshold magnitude for np.int16 dtype')
     args, _ = parser.parse_known_args()
 
-    test_threshold(args)
-    #split_wavs(args)
+    #test_threshold(args)
+    split_wavs(args)
 
 
 #python clean.py --src_root D:/SirenNeuralNetwork/Audio-Classification/raw --dst_root D:/SirenNeuralNetwork/Audio-Classification/clean --fn 10567

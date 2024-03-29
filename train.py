@@ -30,7 +30,7 @@ class DataGenerator(tf.keras.utils.Sequence):
 
 
     def __len__(self):
-        return int(np.floor(len(self.wav_paths) / self.batch_size)) #total number of files divided by batch size
+        return int(np.floor(len(self.wav_paths) / self.batch_size)) 
 
     #iter will call __getitem__
     def __getitem__(self, index):
@@ -102,6 +102,7 @@ def train(args):
     #'''
     model = models[model_type]
     model.summary()
+    print(len(os.listdir(args.src_root)))
     cp = ModelCheckpoint('models/{}.h5'.format(model_type), monitor='val_loss',
                          save_best_only=True, save_weights_only=False,
                          mode='auto', save_freq='epoch', verbose=1)
@@ -117,29 +118,32 @@ def train(args):
     plt.show()
 
     plt.title('Loss')
-    plt.plot(hist.history['loss'], 'r', label='accuracy')
-    plt.plot(hist.history['val_loss'], 'b', label='validation accuracy')
+    plt.plot(hist.history['loss'], 'r', label='loss')
+    plt.plot(hist.history['val_loss'], 'b', label='validation loss')
     plt.legend()
     plt.show()
 
     plt.title('Precision')
-    plt.plot(hist.history['accuracy'], 'r', label='accuracy')
-    plt.plot(hist.history['val_accuracy'], 'b', label='validation accuracy')
+    plt.plot(hist.history['precision_1'], 'r', label='accuracy')
+    plt.plot(hist.history['val_precision_1'], 'b', label='validation accuracy')
     plt.legend()
     plt.show()
 
     plt.title('Recall')
-    plt.plot(hist.history['accuracy'], 'r', label='accuracy')
-    plt.plot(hist.history['val_accuracy'], 'b', label='validation accuracy')
+    plt.plot(hist.history['recall_1'], 'r', label='accuracy')
+    plt.plot(hist.history['val_recall_1'], 'b', label='validation accuracy')
     plt.legend()
     plt.show()
+
+    plt.title('Training Loss and Accuracy')
+    plt.plot(hist.history['accuracy'])
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Audio Classification Training')
-    parser.add_argument('--model_type', type=str, default='lstm',
+    parser.add_argument('--model_type', type=str, default='conv2d',
                         help='model to run. i.e. conv1d, conv2d, lstm')
-    parser.add_argument('--src_root', type=str, default='D:/SirenNeuralNetwork/Audio-Classification/clean',
+    parser.add_argument('--src_root', type=str, default='D:/SirenNeuralNetwork/enhanced-sirenmodel/clean_',
                         help='directory of audio files in total duration')
     parser.add_argument('--batch_size', type=int, default=16,
                         help='batch size')
@@ -151,4 +155,5 @@ if __name__ == '__main__':
 
     train(args)
 
-# python train.py
+    
+#python train.py
